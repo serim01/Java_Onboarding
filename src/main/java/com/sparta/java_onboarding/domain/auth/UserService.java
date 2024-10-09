@@ -4,6 +4,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sparta.java_onboarding.common.security.JwtService;
+import com.sparta.java_onboarding.domain.auth.dto.SignRequestDto;
+import com.sparta.java_onboarding.domain.auth.dto.SignResponseDto;
 import com.sparta.java_onboarding.domain.auth.dto.SignupRequestDto;
 import com.sparta.java_onboarding.domain.auth.dto.SignupResponseDto;
 import com.sparta.java_onboarding.domain.auth.entity.User;
@@ -17,6 +20,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
 
 	@Transactional
 	public SignupResponseDto signup(SignupRequestDto requestDto) {
@@ -33,5 +37,23 @@ public class UserService {
 			.nickname(requestDto.getNickname())
 			.authorityName(UserAuthorityName.USER)
 			.build();
+	}
+
+	public SignResponseDto sign(SignRequestDto requestDto) {
+		User user = findUserByUsername(requestDto.getUsername());
+
+		String accessToken = jwtService.generateAccessToken(user.getAuthorityName(), user.getUsername());
+		String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+
+		user.updateRefreshToken(refreshToken);
+
+		jwtService.setRefreshTokenAtCookie(refreshToken);
+		jwtService.setAccessTokenAtHeader(accessToken);
+
+		return SignResponseDto.builder().user(user).build();
+	}
+
+	public User findUserByUsername(String username) {
+		return userRepository.findUserByUsername(username);
 	}
 }

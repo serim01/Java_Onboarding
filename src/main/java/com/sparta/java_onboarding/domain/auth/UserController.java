@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sparta.java_onboarding.domain.auth.dto.SignRequestDto;
+import com.sparta.java_onboarding.domain.auth.dto.SignResponseDto;
 import com.sparta.java_onboarding.domain.auth.dto.SignupRequestDto;
 import com.sparta.java_onboarding.domain.auth.dto.SignupResponseDto;
 
@@ -23,4 +25,9 @@ public class UserController {
 		return ResponseEntity.ok().body(response);
 	}
 
+	@PostMapping("/sign")
+	public ResponseEntity<SignResponseDto> sign(@RequestBody SignRequestDto requestDto) {
+		SignResponseDto response = userService.sign(requestDto);
+		return ResponseEntity.ok().body(response);
+	}
 }
