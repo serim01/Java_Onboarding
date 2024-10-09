@@ -34,11 +34,21 @@ public class User {
 	@Enumerated(value = EnumType.STRING)
 	private UserAuthorityName authorityName;
 
+	private String refreshToken;
+
 	@Builder
 	public User(String username, String password, String nickname, UserAuthorityName authorityName) {
 		this.username = username;
 		this.password = password;
 		this.nickname = nickname;
 		this.authorityName = authorityName;
+	}
+
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
+	public void clearRefreshToken() {
+		this.refreshToken = null;
 	}
 }
