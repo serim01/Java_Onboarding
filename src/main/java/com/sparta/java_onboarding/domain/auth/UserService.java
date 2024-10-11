@@ -1,10 +1,13 @@
 package com.sparta.java_onboarding.domain.auth;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sparta.java_onboarding.common.exception.CustomException;
+import com.sparta.java_onboarding.common.exception.ErrorCode;
 import com.sparta.java_onboarding.common.security.JwtService;
 import com.sparta.java_onboarding.domain.auth.dto.SignRequestDto;
 import com.sparta.java_onboarding.domain.auth.dto.SignResponseDto;
@@ -32,6 +35,12 @@ public class UserService {
 	}
 
 	private User createUser(SignupRequestDto requestDto) {
+
+		Optional<User> user = userRepository.findUserByUsername(requestDto.getUsername());
+		if (user.isPresent()) {
+			throw new CustomException(ErrorCode.DUPLICATE_UESR);
+		}
+
 		return User.builder()
 			.username(requestDto.getUsername())
 			.password(passwordEncoder.encode(requestDto.getPassword()))
@@ -42,6 +51,10 @@ public class UserService {
 
 	public SignResponseDto sign(SignRequestDto requestDto) {
 		User user = findUserByUsername(requestDto.getUsername());
+
+		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+			throw new CustomException(ErrorCode.PASSWORD_INVALID);
+		}
 
 		String accessToken = jwtService.generateAccessToken(user.getAuthorityName(), user.getUsername());
 		String refreshToken = jwtService.generateRefreshToken(user.getUsername());
@@ -56,6 +69,6 @@ public class UserService {
 
 	public User findUserByUsername(String username) {
 		return userRepository.findUserByUsername(username)
-			.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 	}
 }
