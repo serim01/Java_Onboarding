@@ -57,7 +57,7 @@ class UserControllerTest {
 		testUser.updateRefreshToken(expectedToken);
 		// responseDto 생성 시 token 값 설정
 		SignResponseDto responseDto = SignResponseDto.builder()
-			.user(testUser)
+			.token(expectedToken)
 			.build();
 
 		when(userService.sign(any(SignRequestDto.class))).thenReturn(responseDto);
