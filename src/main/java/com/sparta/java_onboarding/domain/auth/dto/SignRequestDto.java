@@ -1,8 +1,10 @@
 package com.sparta.java_onboarding.domain.auth.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class SignRequestDto {
 	String username;
 	String password;
