@@ -1,5 +1,6 @@
 package com.sparta.java_onboarding.domain.auth;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,7 @@ public class UserService {
 	}
 
 	public User findUserByUsername(String username) {
-		return userRepository.findUserByUsername(username);
+		return userRepository.findUserByUsername(username)
+			.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 	}
 }
