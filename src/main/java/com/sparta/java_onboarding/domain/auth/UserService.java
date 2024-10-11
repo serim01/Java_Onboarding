@@ -49,6 +49,7 @@ public class UserService {
 			.build();
 	}
 
+	@Transactional
 	public SignResponseDto sign(SignRequestDto requestDto) {
 		User user = findUserByUsername(requestDto.getUsername());
 
@@ -64,7 +65,7 @@ public class UserService {
 		jwtService.setRefreshTokenAtCookie(refreshToken);
 		jwtService.setAccessTokenAtHeader(accessToken);
 
-		return SignResponseDto.builder().user(user).build();
+		return SignResponseDto.builder().token(accessToken).build();
 	}
 
 	public User findUserByUsername(String username) {
